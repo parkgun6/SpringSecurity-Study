@@ -1,8 +1,7 @@
 package org.geon.club.controller;
 
 import lombok.extern.log4j.Log4j2;
-import org.geon.club.dto.ClubAuthMemberDTO;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.geon.club.security.dto.ClubAuthMemberDTO;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

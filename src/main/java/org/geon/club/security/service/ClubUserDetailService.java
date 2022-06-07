@@ -2,7 +2,7 @@ package org.geon.club.security.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.geon.club.dto.ClubAuthMemberDTO;
+import org.geon.club.security.dto.ClubAuthMemberDTO;
 import org.geon.club.entity.ClubMember;
 import org.geon.club.repository.ClubMemberRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

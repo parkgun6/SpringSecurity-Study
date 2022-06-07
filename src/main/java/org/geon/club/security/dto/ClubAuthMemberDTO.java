@@ -1,4 +1,4 @@
-package org.geon.club.dto;
+package org.geon.club.security.dto;
 
 import lombok.Getter;
 import lombok.Setter;
