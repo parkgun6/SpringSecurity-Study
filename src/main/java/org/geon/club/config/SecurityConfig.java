@@ -1,6 +1,10 @@
 package org.geon.club.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.geon.club.security.handler.ClubLoginSuccessHandler;
+import org.geon.club.security.service.ClubUserDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @Log4j2
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final ClubUserDetailService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -22,16 +29,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/sample/all").permitAll()
-                .antMatchers("/sample/member").hasRole("USER")
-                .antMatchers("/sample/admin").hasRole("ADMIN");
+//        http.authorizeRequests()
+//                .antMatchers("/sample/all").permitAll()
+//                .antMatchers("/sample/member").hasRole("USER")
+//                .antMatchers("/sample/admin").hasRole("ADMIN");
 
         http.formLogin();
         http.csrf().disable(); // get방식으로 logout이 가능함
         http.logout();
 
+        http.oauth2Login().successHandler(successHandler());
+        http.rememberMe().tokenValiditySeconds(60*60*7)
+                .userDetailsService(userDetailsService);
+
         return http.build();
+    }
+
+    @Bean
+    public ClubLoginSuccessHandler successHandler() {
+        return new ClubLoginSuccessHandler(passwordEncoder());
     }
 
 //    @Bean
