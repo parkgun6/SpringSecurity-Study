@@ -1,7 +1,10 @@
 package org.geon.club.security.filter;
 
+import com.nimbusds.jose.shaded.json.JSONObject;
 import lombok.extern.log4j.Log4j2;
+import org.geon.club.security.util.JWTUtil;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -9,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Log4j2
 public class ApiCheckFilter extends OncePerRequestFilter {
@@ -19,9 +23,12 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
     private String pattern;
 
-    public ApiCheckFilter(String pattern) {
+    private JWTUtil jwtUtil;
+
+    public ApiCheckFilter(String pattern, JWTUtil jwtUtil) {
         this.antPathMatcher = new AntPathMatcher();
         this.pattern = pattern;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -35,10 +42,52 @@ public class ApiCheckFilter extends OncePerRequestFilter {
             log.info("-------------ApiCheckFilter---------------");
             log.info("-------------ApiCheckFilter---------------");
 
+            boolean checkHeader = checkAuthHeader(request);
+
+            if (checkHeader) {
+                filterChain.doFilter(request, response);
+                return;
+            }else {
+                // 인증이 실패해도 200 status가 나는 것을 방지
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                // json 리턴 및 한글깨짐 수정.
+                response.setContentType("application/json;charset=utf-8");
+                JSONObject json = new JSONObject();
+                String message = "FAIL CHECK API TOKEN";
+                json.put("code", "403");
+                json.put("message", message);
+
+                PrintWriter out = response.getWriter();
+                // 화면으로 json Data 전송
+                out.print(json);
+            }
+
             return;
         }
 
 
         filterChain.doFilter(request, response); // 다음필터로 넘어가기 위해 필요
+    }
+
+    private boolean checkAuthHeader(HttpServletRequest request) {
+
+        boolean checkResult = false;
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+            log.info("Authorization exist : " + authHeader);
+            try {
+                String email = jwtUtil.validateAndExtract(authHeader.substring(7));
+                log.info("validate result : " + email);
+                checkResult = email.length() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+//            if (authHeader.equals("12345678")) {
+//                checkResult = true;
+//            }
+        }
+        return checkResult;
     }
 }
