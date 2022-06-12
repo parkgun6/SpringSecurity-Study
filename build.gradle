@@ -39,6 +39,9 @@ dependencies {
     /* java8 날짜관련 라이브러리 */
     implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time', version: '3.0.4.RELEASE'
 
+    // jwt lib
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
 }
 
 tasks.named('test') {
