@@ -3,20 +3,22 @@ package org.geon.club.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.geon.club.security.filter.ApiCheckFilter;
+import org.geon.club.security.filter.ApiLoginFailHandler;
 import org.geon.club.security.filter.ApiLoginFilter;
 import org.geon.club.security.handler.ClubLoginSuccessHandler;
 import org.geon.club.security.service.ClubUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.geon.club.security.util.JWTUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -47,9 +49,10 @@ public class SecurityConfig {
         http.rememberMe().tokenValiditySeconds(60*60*7)
                 .userDetailsService(userDetailsService);
 
+        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
         // 필터의 동작순서를 변경한다.
         http.addFilterBefore(apiCheckFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(apiLoginFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(apiLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -61,15 +64,26 @@ public class SecurityConfig {
 
     @Bean
     public ApiCheckFilter apiCheckFilter() {
-        return new ApiCheckFilter("/notes/**/*");
+        return new ApiCheckFilter("/notes/**/*", jwtUtil());
     }
 
     @Bean
-    public ApiLoginFilter apiLoginFilter() throws Exception {
-        ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/api/login");
-//        apiLoginFilter.setAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
+    @Bean
+    public ApiLoginFilter apiLoginFilter(AuthenticationManager authenticationManager) throws Exception {
+        ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/api/login", jwtUtil());
+        apiLoginFilter.setAuthenticationManager(authenticationManager);
+
+        apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler());
         return apiLoginFilter;
+    }
+
+    @Bean
+    public JWTUtil jwtUtil() {
+        return new JWTUtil();
     }
 
 //    @Bean
