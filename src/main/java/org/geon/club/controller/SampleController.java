@@ -19,7 +19,7 @@ public class SampleController {
         log.info("exAll..........");
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public void exAdmin(){
         log.info("exAdmin..........");
