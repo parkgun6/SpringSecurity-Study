@@ -27,7 +27,8 @@ public class ApiLoginFailHandler implements AuthenticationFailureHandler {
         String message = exception.getMessage();
 
         json.put("code", "401");
-        json.put("message", message);
+//        json.put("message", message);
+        json.put("message", "아이디 혹은 패스워드가 맞지 않습니다.");
 
         PrintWriter out = response.getWriter();
         // 화면으로 json Data 전송
