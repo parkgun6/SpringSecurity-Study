@@ -8,18 +8,45 @@
 <body>
     <h1>ALL</h1>
     <a href="/sample/member">Member</a>
-    <form action="/api/login" method="post">
+    <form class="form">
         <input name="email" value="user95@geon.com" />
         <input name="pw" value="1111" />
-        <button>submit</button>
     </form>
+    <button class="loginBtn">submit</button>
     <div>
-        <button class="loginBtn" style="padding:30px">GET NOTES</button>
+        <button class="getNoteBtn" style="padding:30px">GET NOTES</button>
     </div>
 </body>
 <script>
 
     $(".loginBtn").click(function(){
+        console.log($(".form")[0])
+        const form = $('.form')[0]
+        const formData = new FormData(form)
+        console.log(formData)
+
+        $.ajax({
+            url: "http://localhost:8080/api/login",
+            dataType: 'text',
+            contentType: false,
+            processData: false,
+            data: formData,
+            method: 'post',
+            success: function(res) {
+                console.log(res)
+            },
+            error: function(err) {
+                console.log(err.responseText)
+                const errMsg = JSON.parse(err.responseText)
+                console.log(errMsg.message)
+                alert(errMsg.message)
+            }
+
+        })
+    })
+
+
+    $(".getNoteBtn").click(function(){
 
         const jwtValue = 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTUwODQzNzksImV4cCI6MTY1NzY3NjM3OSwic3ViIjoidXNlcjk1QGdlb24uY29tIn0.Lwj0K1bT2g_gcNGWKRpWZaTOFSPRaXtXzvCqM_fOJoE'
 
