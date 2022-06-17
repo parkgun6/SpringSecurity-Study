@@ -18,7 +18,6 @@
     </div>
 </body>
 <script>
-
     $(".loginBtn").click(function(){
         console.log($(".form")[0])
         const form = $('.form')[0]
@@ -34,10 +33,12 @@
             method: 'post',
             success: function(res) {
                 console.log(res)
+                window.localStorage.setItem("token",res)
+
             },
             error: function(err) {
                 console.log(err.responseText)
-                const errMsg = JSON.parse(err.responseText)
+                const errMsg = err.responseJSON
                 console.log(errMsg.message)
                 alert(errMsg.message)
             }
@@ -48,17 +49,18 @@
 
     $(".getNoteBtn").click(function(){
 
-        const jwtValue = 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTUwODQzNzksImV4cCI6MTY1NzY3NjM3OSwic3ViIjoidXNlcjk1QGdlb24uY29tIn0.Lwj0K1bT2g_gcNGWKRpWZaTOFSPRaXtXzvCqM_fOJoE'
-
         $.ajax({
             beforeSend: function(request) {
-                request.setRequestHeader("Authorization", "Bearer " + jwtValue);
+                request.setRequestHeader("Authorization", "Bearer " + window.localStorage.getItem("token"));
             },
             dataType: "json",
             url: "http://localhost:8080/notes/all",
             data: {email: 'user10@geon.com'},
             success: function(arr) {
                 console.log(arr)
+            },
+            error: err => {
+                console.log(err.responseJSON.message)
             }
         })// end ajax
     })// end Click Function
