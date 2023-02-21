@@ -1,16 +1,16 @@
 package org.geon.club.security.filter;
 
-import com.nimbusds.jose.shaded.json.JSONObject;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import net.minidev.json.JSONObject;
 import org.geon.club.security.util.JWTUtil;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -56,10 +56,10 @@ public class ApiCheckFilter extends OncePerRequestFilter {
                 String message = "FAIL CHECK API TOKEN";
                 json.put("code", "403");
                 json.put("message", message);
-
                 PrintWriter out = response.getWriter();
                 // 화면으로 json Data 전송
                 out.print(json);
+
             }
 
             return;

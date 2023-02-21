@@ -11,12 +11,8 @@ import org.geon.club.security.util.JWTUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationTrustResolver;
-import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -41,7 +37,7 @@ public class SecurityConfig {
 //                .antMatchers("/sample/member").hasRole("USER")
 //                .antMatchers("/sample/admin").hasRole("ADMIN");
 
-        http.formLogin();
+        http.formLogin().defaultSuccessUrl("/sample/member");
         http.csrf().disable(); // get방식으로 logout이 가능함
         http.logout();
 
