@@ -1,22 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <h1>ALL</h1>
-    <a href="/sample/member">Member</a>
-    <a href="/sample/login">Login</a>
     <form class="form">
         <input name="email" value="user95@geon.com" />
         <input name="pw" value="1111" />
     </form>
     <button class="loginBtn">submit</button>
-    <div>
-        <button class="getNoteBtn" style="padding:30px">GET NOTES</button>
-    </div>
 </body>
 <script>
     $(".loginBtn").click(function(){
@@ -46,25 +41,6 @@
 
         })
     })
-
-
-    $(".getNoteBtn").click(function(){
-
-        $.ajax({
-            beforeSend: function(request) {
-                request.setRequestHeader("Authorization", "Bearer " + window.localStorage.getItem("token"));
-            },
-            dataType: "json",
-            url: "http://localhost:8080/notes/all",
-            data: {email: 'user10@geon.com'},
-            success: function(arr) {
-                console.log(arr)
-            },
-            error: err => {
-                console.log(err.responseJSON.message)
-            }
-        })// end ajax
-    })// end Click Function
 
 </script>
 </html>

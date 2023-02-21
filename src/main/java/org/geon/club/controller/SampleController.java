@@ -18,6 +18,11 @@ public class SampleController {
     public void exAll(){
         log.info("exAll..........");
     }
+    @PreAuthorize("permitAll()")
+    @GetMapping("/login")
+    public void login(){
+        log.info("exAll..........");
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
